@@ -1,0 +1,116 @@
+#include <iostream>
+#include <vector>
+#include <algorithm> // For remove_if
+
+using namespace std;
+
+// Task structure
+struct Task {
+    string description;
+    bool completed;
+
+    Task(const string& desc) : description(desc), completed(false) {}
+};
+
+// Function declarations
+void displayMenu();
+void addTask(vector<Task>& tasks, const string& description);
+void viewTasks(const vector<Task>& tasks);
+void markCompleted(vector<Task>& tasks, const string& description);
+void removeTask(vector<Task>& tasks, const string& description);
+
+int main() {
+    vector<Task> tasks;
+
+    char choice;
+    do {
+        displayMenu();
+        cin >> choice;
+
+        switch (choice) {
+            case '1': {
+                string description;
+                cout << "Enter task description: ";
+                cin.ignore(); // Clear the newline character from the buffer
+                getline(cin, description);
+                addTask(tasks, description);
+                break;
+            }
+            case '2':
+                viewTasks(tasks);
+                break;
+            case '3': {
+                string description;
+                cout << "Enter task description to mark as completed: ";
+                cin.ignore(); // Clear the newline character from the buffer
+                getline(cin, description);
+                markCompleted(tasks, description);
+                break;
+            }
+            case '4': {
+                string description;
+                cout << "Enter task description to remove: ";
+                cin.ignore(); // Clear the newline character from the buffer
+                getline(cin, description);
+                removeTask(tasks, description);
+                break;
+            }
+            case '5':
+                cout << "Exiting the to-do list manager. Goodbye!" << endl;
+                break;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+
+    } while (choice != '5');
+
+    return 0;
+}
+
+// Function definitions
+void displayMenu() {
+    cout << "\n--- To-Do List Manager ---\n"
+         << "1. Add Task\n"
+         << "2. View Tasks\n"
+         << "3. Mark Task as Completed\n"
+         << "4. Remove Task\n"
+         << "5. Exit\n"
+         << "Choose an option (1-5): ";
+}
+
+void addTask(vector<Task>& tasks, const string& description) {
+    tasks.push_back(Task(description));
+    cout << "Task added successfully!" << endl;
+}
+
+void viewTasks(const vector<Task>& tasks) {
+    cout << "\n--- Tasks ---\n";
+    for (const Task& task : tasks) {
+        cout << "- " << task.description << " [" << (task.completed ? "Completed" : "Pending") << "]\n";
+    }
+    cout << endl;
+}
+
+void markCompleted(vector<Task>& tasks, const string& description) {
+    auto it = find_if(tasks.begin(), tasks.end(),
+                      [&description](const Task& task) { return task.description == description; });
+
+    if (it != tasks.end()) {
+        it->completed = true;
+        cout << "Task marked as completed!" << endl;
+    } else {
+        cout << "Task not found." << endl;
+    }
+}
+
+void removeTask(vector<Task>& tasks, const string& description) {
+    auto it = remove_if(tasks.begin(), tasks.end(),
+                        [&description](const Task& task) { return task.description == description; });
+
+    if (it != tasks.end()) {
+        tasks.erase(it, tasks.end());
+        cout << "Task removed successfully!" << endl;
+    } else {
+        cout << "Task not found." << endl;
+    }
+}
